@@ -1,0 +1,15 @@
+{
+  "name": "Moj šank – interna evidencija",
+  "short_name": "Moj šank",
+  "description": "Offline interna evidencija prodaje pića",
+  "lang": "sr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f7fb",
+  "theme_color": "#14213d",
+  "icons": [
+    {"src":"./icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

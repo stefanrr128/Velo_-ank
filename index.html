@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="sr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172554">
+  <meta name="description" content="Interna offline evidencija prodaje pića">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>Moj šank</title>
+</head>
+<body>
+<header class="topbar">
+  <div><div class="eyebrow">INTERNA EVIDENCIJA</div><h1>Moj šank</h1></div>
+  <div id="offlineBadge" class="status">● Offline spremno</div>
+</header>
+
+<nav class="tabs" aria-label="Glavna navigacija">
+  <button class="tab active" data-view="places">Mesta</button>
+  <button class="tab" data-view="products">Cenovnik</button>
+  <button class="tab" data-view="reports">Izveštaj</button>
+  <button class="tab" data-view="backup">Kopija</button>
+</nav>
+
+<main>
+  <section id="view-places" class="view active">
+    <div class="section-head"><div><h2>Mesta i računi</h2><p>Izaberi mesto da otvoriš njegov račun.</p></div><button id="editPlacesBtn" class="secondary">Uredi nazive</button></div>
+    <div id="placesGrid" class="places-grid"></div>
+  </section>
+
+  <section id="view-products" class="view">
+    <div class="section-head"><div><h2>Cenovnik pića</h2><p>Dodaj artikle i postavi prodajne cene.</p></div></div>
+    <form id="productForm" class="panel form-grid">
+      <input id="productId" type="hidden">
+      <label>Naziv artikla<input id="productName" required maxlength="80" placeholder="npr. Coca-Cola 0,25"></label>
+      <label>Kategorija<input id="productCategory" maxlength="40" placeholder="npr. Sokovi"></label>
+      <label>Cena (RSD)<input id="productPrice" required type="number" min="0" step="1" inputmode="numeric" placeholder="220"></label>
+      <div class="form-actions"><button class="primary" type="submit">Sačuvaj artikal</button><button class="secondary" type="button" id="cancelEdit">Poništi</button></div>
+    </form>
+    <div class="search-wrap"><input id="productSearch" placeholder="Pretraži cenovnik…"></div>
+    <div id="productsList" class="list"></div>
+  </section>
+
+  <section id="view-reports" class="view">
+    <div class="section-head"><div><h2>Dnevni izveštaj</h2><p>Pregled evidentiranih naplata.</p></div></div>
+    <div class="panel">
+      <label>Datum izveštaja<input id="reportDate" type="date"></label>
+      <button id="deleteDayBtn" class="danger" style="margin-top:12px;width:100%">Obriši ceo izveštaj za ovaj dan</button>
+      <div class="stats">
+        <div class="stat"><span>Ukupan promet</span><strong id="reportTotal">0 RSD</strong></div>
+        <div class="stat"><span>Broj računa</span><strong id="reportCount">0</strong></div>
+        <div class="stat"><span>Prodatih komada</span><strong id="reportItems">0</strong></div>
+      </div>
+    </div>
+    <h3>Prodaja po artiklima</h3>
+    <div id="reportProducts" class="list"></div>
+    <h3>Računi tog dana</h3>
+    <div id="reportReceipts" class="list"></div>
+  </section>
+
+  <section id="view-backup" class="view">
+    <div class="section-head"><div><h2>Rezervna kopija</h2><p>Sačuvaj podatke da ih ne izgubiš ako se telefon pokvari.</p></div></div>
+    <div class="panel stack">
+      <p><strong>Izvoz:</strong> preuzima fajl sa cenovnikom, otvorenim računima i istorijom prodaje.</p>
+      <button id="exportBtn" class="primary">Izvezi rezervnu kopiju</button>
+      <hr>
+      <p><strong>Uvoz:</strong> vrati podatke iz ranije napravljene kopije. Uvoz zamenjuje trenutne podatke.</p>
+      <label class="file-label">Izaberi JSON kopiju<input id="importFile" type="file" accept=".json,application/json"></label>
+      <button id="importBtn" class="danger">Vrati rezervnu kopiju</button>
+      <p class="hint">Preporuka: izvezi kopiju na kraju svakog radnog dana i sačuvaj je van telefona.</p>
+    </div>
+    <div class="panel stack">
+      <h3>Važno o čuvanju podataka</h3>
+      <p>Podaci se čuvaju lokalno u ovom pregledaču na ovom telefonu. Ne briši podatke sajta/pregledača i redovno pravi rezervnu kopiju. Ako koristiš drugi telefon ili drugi pregledač, podaci se ne prenose sami.</p>
+    </div>
+  </section>
+</main>
+
+<dialog id="receiptDialog">
+  <div class="dialog-head"><div><div class="eyebrow">OTVOREN RAČUN</div><h2 id="dialogPlace">Mesto</h2></div><button id="closeDialog" class="icon-btn" aria-label="Zatvori">✕</button></div>
+  <div id="receiptLines" class="receipt-lines"></div>
+  <div class="add-item panel">
+    <div class="category-buttons" id="categoryButtons"></div>
+    <div class="product-buttons" id="productButtons"></div>
+    <div class="inline-fields"><label>Količina<input id="addQuantity" type="number" min="1" max="999" step="1" value="1" inputmode="numeric"></label><button id="addItemBtn" class="primary">Dodaj izabrano</button></div>
+    <input id="selectedProductId" type="hidden">
+  </div>
+  <div class="receipt-total"><span>UKUPNO</span><strong id="receiptTotal">0 RSD</strong></div>
+  <div class="dialog-actions receipt-actions">
+    <button id="clearReceiptBtn" class="secondary">Isprazni račun</button>
+    <button id="showReceiptBtn" class="secondary">Prikaži račun</button>
+    <button id="payReceiptBtn" class="primary">Naplati račun</button>
+  </div>
+  <p class="hint">Stavke možeš naplaćivati pojedinačno preko dugmeta „Naplati” pored artikla. Preostale stavke ostaju na otvorenom računu.</p>
+</dialog>
+<dialog id="placesDialog">
+  <div class="dialog-head"><div><div class="eyebrow">PODEŠAVANJA</div><h2>Nazivi mesta</h2></div><button id="closePlacesDialog" class="icon-btn" aria-label="Zatvori">✕</button></div>
+  <p class="hint">Promena naziva ne briše račune. Istorijski računi zadržavaju naziv koji su imali prilikom naplate.</p>
+  <div id="placeNamesForm" class="place-name-form"></div>
+  <div class="dialog-actions"><button id="cancelPlaceNames" class="secondary">Odustani</button><button id="savePlaceNames" class="primary">Sačuvaj nazive</button></div>
+</dialog>
+<div id="toast" class="toast" role="status"></div>
+<footer>Interna evidencija • Nije fiskalna kasa</footer>
+<script src="app.js"></script>
+</body>
+</html>
